@@ -1,19 +1,13 @@
-service: flask-app
+service: flask-serverless
 
 provider:
   name: aws
   runtime: python3.12
   region: us-east-2
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:*
-        - logs:*
-      Resource: "*"
 
 functions:
   app:
-    handler: app.handler
+    handler: wsgi.handler
     events:
       - http:
           path: /{proxy+}
@@ -26,14 +20,14 @@ plugins:
 
 custom:
   wsgi:
-    app: app.create_app
-    packRequirements: false
-  pythonRequirements:
-    dockerizePip: true
-    zip: true
-    slim: true
+    app: run.app  # Function to create the Flask app
+    packRequirements: false  # Allow Serverless to package requirements without Docker
 
 package:
   exclude:
     - node_modules/**
     - venv/**
+    - tests/**  # Optional: Exclude test folders if not needed
+
+requirements:
+  dockerizePip: true
