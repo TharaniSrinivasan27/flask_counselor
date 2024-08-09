@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+  pre_build:
+    commands:
+      - echo Pre-build phase...
+      # Additional commands can be added here if needed
+  build:
+    commands:
+      - echo Building the application...
+      # Any build commands or testing commands can be added here
+      - echo Building the Serverless package...
+      - npx serverless package
+  post_build:
+    commands:
+      - echo Post-build phase...
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
+  base-directory: .serverless
+  name: serverless-package

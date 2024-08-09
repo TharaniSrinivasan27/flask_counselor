@@ -1,0 +1,39 @@
+service: flask-app
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: us-east-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - logs:*
+      Resource: "*"
+
+functions:
+  app:
+    handler: app.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+custom:
+  wsgi:
+    app: app.create_app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+    slim: true
+
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
